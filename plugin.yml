@@ -1,0 +1,16 @@
+name: HaNPlugin
+main: mangobox.main.HaNMain
+version: 0.1
+commands:
+   setmaxhealth:
+     description: Sets your max health!
+     usage: /<command>
+   setspeed:
+     description: Sets your walking speed!
+     usage: /<command>  
+   getitemmat:
+     description: Gets the material name in your hand.
+     usage: /<command>
+   showpercbar:
+     description: Gets a percentage.
+     usage: /<command>
