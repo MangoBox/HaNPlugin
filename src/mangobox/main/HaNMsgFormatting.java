@@ -1,5 +1,7 @@
 package mangobox.main;
 
+import org.bukkit.entity.Player;
+
 public class HaNMsgFormatting {
 
 	public HaNMsgFormatting() {
@@ -30,6 +32,10 @@ public class HaNMsgFormatting {
 		}
 		
 		return bar;
+	}
+	
+	public void sendPlayerNutritionMessage(Player player) {
+		
 	}
 
 }

@@ -1,11 +1,15 @@
 package mangobox.main;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HaNMain extends JavaPlugin {
@@ -88,6 +92,23 @@ public class HaNMain extends JavaPlugin {
 			player .sendMessage("§a" + args[0] + "% " + new HaNMsgFormatting().returnPercentageBar(floatPercentage, 10, true, "§a", "§b", "§2"));
 		}
 		return false;
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		File playerFile = new File(this.getDataFolder()+File.separator+"players"+File.separator+event.getPlayer().getUniqueId()+".yml");
+		
+		if(!playerFile.exists()) {
+			try {
+			playerFile.createNewFile();
+			FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+			playerConfig.set("fruitLevel", );
+			playerConfig.set("xpInfo.rank", 1);
+			playerConfig.save(playerFile);
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			}
+		}
 	}
 
 }

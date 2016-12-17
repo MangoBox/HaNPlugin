@@ -30,4 +30,40 @@ public class HaNValueManagement {
 	public float getMaxSpeed() {
 		return Float.parseFloat(mainClass.getConfig().getString("maxSpeed"));
 	}
+	
+	public double getPlayerFruitLevel(Player player) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		return playerConfig.getDouble("fruitLevel");
+	}
+	
+	public double getPlayerVegetablelevel(Player player) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		return playerConfig.getDouble("vegetableLevel");
+	}
+	
+	public double getPlayerMeatlevel(Player player) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		return playerConfig.getDouble("meatLevel");
+	}
+	
+	public double getPlayerGrainlevel(Player player) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		return playerConfig.getDouble("grainLevel");
+	}
+	
+	public double getPlayerFishlevel(Player player) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		return playerConfig.getDouble("fishLevel");
+	}
+	
+	public void setPlayerFruitLevel(Player player) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		playerConfig.
+	}
 }
