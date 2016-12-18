@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 public class HaNMain extends JavaPlugin {
 	
@@ -29,6 +30,10 @@ public class HaNMain extends JavaPlugin {
 		
 		//When true, rounds the maxHealth attribute to the nearest whole heart.
 		getConfig().addDefault("roundMaxHealthUp", true);
+		
+		//The number of ticks before subtracting the subtractPercValue
+		getConfig().addDefault("ticksPerDeduction", 1200L);
+		getConfig().addDefault("deductionPercAmount", -0.05);
 		
 		getConfig().addDefault("fruitDefaultValue", 50d);
 		getConfig().addDefault("vegetableDefaultValue", 50d);
@@ -78,6 +83,22 @@ public class HaNMain extends JavaPlugin {
 		
 		
 		saveConfig();
+		
+		//Creates a scheduler for dwindling away the health levels of players
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+              for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+            	  	HaNValueManagement valueManagement = new HaNValueManagement();
+					valueManagement.addPlayerFishLevel(player, getConfig().getDouble("deductionPercAmount"));
+					valueManagement.addPlayerFruitLevel(player, getConfig().getDouble("deductionPercAmount"));
+					valueManagement.addPlayerVegetableLevel(player, getConfig().getDouble("deductionPercAmount"));
+					valueManagement.addPlayerMeatLevel(player, getConfig().getDouble("deductionPercAmount"));
+					valueManagement.addPlayerGrainLevel(player, getConfig().getDouble("deductionPercAmount"));
+              }
+            }
+        }, 200L, getConfig().getLong("ticksPerDeduction"));
 	}
 	
 	@SuppressWarnings("deprecation")
