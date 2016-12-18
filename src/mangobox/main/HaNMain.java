@@ -30,6 +30,12 @@ public class HaNMain extends JavaPlugin {
 		//When true, rounds the maxHealth attribute to the nearest whole heart.
 		getConfig().addDefault("roundMaxHealthUp", true);
 		
+		getConfig().addDefault("fruitDefaultValue", 50d);
+		getConfig().addDefault("vegetableDefaultValue", 50d);
+		getConfig().addDefault("meatDefaultValue", 50d);
+		getConfig().addDefault("fishDefaultValue", 50d);
+		getConfig().addDefault("grainDefaultValue", 50d);
+		
 		//Vegetable
 		getConfig().addDefault("foodTypes.vegetable.CARROT", 0.25f);
 		getConfig().addDefault("foodTypes.vegetable.POTATO", 0.1f);
@@ -68,9 +74,9 @@ public class HaNMain extends JavaPlugin {
 		getConfig().addDefault("foodTypes.grain.BREAD", 0.4f);
 		getConfig().addDefault("foodTypes.grain.COOKIE", 0.1f);
 		
-		
-		
 		getConfig().options().copyDefaults(true);
+		
+		
 		saveConfig();
 	}
 	
@@ -106,6 +112,22 @@ public class HaNMain extends JavaPlugin {
 				target = Bukkit.getPlayerExact(args[2]);
 			} else {
 				target = player;
+			}
+			
+			//Breaks the method if /health <type> AMOUNT is not a parseable double.
+			//Also breaks the method afterwards if the value is more than 100 or less than 0.
+			if(args.length >= 2) {
+				try {
+				Double.parseDouble(args[1]);
+				} catch (NumberFormatException exception) {
+					player.sendMessage("�cThe amount you entered was not valid.");
+					return false;
+				}
+				
+				if(Double.parseDouble(args[1]) > 100 || Double.parseDouble(args[1]) < 0) {
+					player.sendMessage("�cThe amount you entered must be between 0 and 100.");
+					return false;
+				}
 			}
 			
 			//Breaks the method if the player was not found.
@@ -164,11 +186,11 @@ public class HaNMain extends JavaPlugin {
 			try {
 			playerFile.createNewFile();
 			FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-			playerConfig.set("foodValues.fruitLevel", 50);
-			playerConfig.set("foodValues.meatLevel", 50);
-			playerConfig.set("foodValues.vegetableLevel", 50);
-			playerConfig.set("foodValues.grainLevel", 50);
-			playerConfig.set("foodValues.fishLevel", 50);
+			playerConfig.set("foodValues.fruitLevel", getConfig().getDouble("fruitDefaultValue"));
+			playerConfig.set("foodValues.meatLevel", getConfig().getDouble("meatDefaultValue"));
+			playerConfig.set("foodValues.vegetableLevel", getConfig().getDouble("vegetableDefaultValue"));
+			playerConfig.set("foodValues.grainLevel", getConfig().getDouble("grainDefaultValue"));
+			playerConfig.set("foodValues.fishLevel", getConfig().getDouble("fishDefaultValue"));
 			playerConfig.save(playerFile);
 			} catch (IOException exception) {
 				exception.printStackTrace();

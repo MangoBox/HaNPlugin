@@ -3,6 +3,7 @@ package mangobox.main;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -10,6 +11,66 @@ import org.bukkit.entity.Player;
 public class HaNValueManagement {
 
 	HaNMain mainClass;
+	
+	public double getFoodFruitValue(Material itemMat) {
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.fruit." + itemMat.toString());
+		if(foodValue != null) {
+			return foodValue;
+		} else {
+			return 0d;
+		}
+	}
+	
+	public double getFoodVegetableValue(Material itemMat) {
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.vegetable." + itemMat.toString());
+		if(foodValue != null) {
+			return foodValue;
+		} else {
+			return 0d;
+		}
+	}
+	
+	public double getFoodMeatValue(Material itemMat) {
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.meat." + itemMat.toString());
+		if(foodValue != null) {
+			return foodValue;
+		} else {
+			return 0d;
+		}
+	}
+	
+	public double getFoodFishValue(Material itemMat) {
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.fish." + itemMat.toString());
+		if(foodValue != null) {
+			return foodValue;
+		} else {
+			return 0d;
+		}
+	}
+	
+	public double getFoodGrainValue(Material itemMat) {
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.grain." + itemMat.toString());
+		if(foodValue != null) {
+			return foodValue;
+		} else {
+			return 0d;
+		}
+	}
+	
+	public double getTotalFoodLevel(Player player) {
+		double fruitLevel = getPlayerFruitLevel(player);
+		double vegetableLevel = getPlayerVegetableLevel(player);
+		double meatLevel = getPlayerMeatLevel(player);
+		double grainLevel = getPlayerGrainLevel(player);
+		double fishLevel = getPlayerFishLevel(player);
+		
+		//Below calculations are as follows: Average - (Average - Lowest Set Value * 0.75), creating a heavy bias towards the lowest value.
+		double totalAverage = (fruitLevel + vegetableLevel + meatLevel + grainLevel + fishLevel) / 5;
+		//Extremely inefficient, but it nonetheless returns the lowest food value.
+		double lowestLevel = Math.min(fruitLevel, Math.min(vegetableLevel, Math.min(meatLevel, Math.min(grainLevel, fishLevel))));
+		return totalAverage - ((totalAverage - lowestLevel) * 0.75);
+	
+	}
 	
 	//Returns the minimum maximum health possible
 	public Double getMinHealth() {
