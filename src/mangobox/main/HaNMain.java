@@ -3,6 +3,7 @@ package mangobox.main;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -73,8 +74,10 @@ public class HaNMain extends JavaPlugin {
 		saveConfig();
 	}
 	
+	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String [] args) {
-		if(cmd.getName().equalsIgnoreCase("setmaxhealth") && sender instanceof Player) {
+		//The debugging commands. Use if necessary.
+		/* if(cmd.getName().equalsIgnoreCase("setmaxhealth") && sender instanceof Player) {
 			Player player = (Player) sender;
 			player.setMaxHealth(Double.parseDouble(args[0]));
 			return false;
@@ -89,7 +92,66 @@ public class HaNMain extends JavaPlugin {
 		} else if (cmd.getName().equalsIgnoreCase("showpercbar") && sender instanceof Player) {
 			float floatPercentage = Float.parseFloat(args[0]);
 			Player player = (Player) sender;
-			player .sendMessage("§a" + args[0] + "% " + new HaNMsgFormatting().returnPercentageBar(floatPercentage, 10, true, "§a", "§b", "§2"));
+			player .sendMessage("ï¿½a" + args[0] + "% " + new HaNMsgFormatting().returnPercentageBar(floatPercentage, 10, true, "ï¿½a", "ï¿½b", "ï¿½2"));
+		}
+		return false;
+		*/
+		if(cmd.getName().equalsIgnoreCase("health") && sender instanceof Player) {
+			//Casting the Sender to a player.
+			Player player = (Player) sender;
+			Player target;
+			
+			//Setting the target to the sender if they leave the last argument out.
+			if(args.length == 3) {
+				target = Bukkit.getPlayerExact(args[2]);
+			} else {
+				target = player;
+			}
+			
+			//Breaks the method if the player was not found.
+			if(target == null) {
+				player.sendMessage("ï¿½cThe target was not found.");
+				return false;
+			}
+			
+			HaNValueManagement valueManagement = new HaNValueManagement();
+			if (args.length == 0) {
+				//Making the standard health message
+				
+			} else if (args.length >= 1) {
+				//Command for setting health values. Admin permission should be added to the statement above.
+				if(args.length == 1) {
+					player.sendMessage("ï¿½cThat command was not used correctly. Usage: /health <type> <amount> [player]");
+					player.sendMessage("ï¿½cTypes are: fruit, vegetable, fish, meant, grain, all");
+				} else if (args.length == 2 || args.length == 3) {
+					//Setting the individual values.
+					switch (args[0]) {
+						case "all":
+							valueManagement.setPlayerFishLevel(target, Double.parseDouble(args[1]));
+							valueManagement.setPlayerFruitLevel(target, Double.parseDouble(args[1]));
+							valueManagement.setPlayerMeatLevel(target, Double.parseDouble(args[1]));
+							valueManagement.setPlayerVegetableLevel(target, Double.parseDouble(args[1]));
+							valueManagement.setPlayerGrainLevel(target, Double.parseDouble(args[1]));
+							player.sendMessage("ï¿½aSet all values to " + args[1] + " for player " + target.getDisplayName());
+						case "fruit":
+							valueManagement.setPlayerFruitLevel(target, Double.parseDouble(args[1]));
+						case "vegetable":
+							valueManagement.setPlayerVegetableLevel(target, Double.parseDouble(args[1]));
+						case "meat":
+							valueManagement.setPlayerMeatLevel(target, Double.parseDouble(args[1]));
+						case "grain":
+							valueManagement.setPlayerGrainLevel(target, Double.parseDouble(args[1]));
+						case "fish":
+							valueManagement.setPlayerFishLevel(target, Double.parseDouble(args[1]));
+						default:
+							//If the type of food is invalid, the player is sent an error message.
+							player.sendMessage("ï¿½cThat type of food value was not found.");
+					}
+				} else if (args.length >= 4) {
+					player.sendMessage("ï¿½cToo many arguments. Usage: /health <type> <amount> [player]");
+					player.sendMessage("ï¿½cTypes are: fruit, vegetable, fish, meant, grain, all");
+				}
+			}
 		}
 		return false;
 	}
@@ -102,8 +164,11 @@ public class HaNMain extends JavaPlugin {
 			try {
 			playerFile.createNewFile();
 			FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-			playerConfig.set("fruitLevel", );
-			playerConfig.set("xpInfo.rank", 1);
+			playerConfig.set("foodValues.fruitLevel", 50);
+			playerConfig.set("foodValues.meatLevel", 50);
+			playerConfig.set("foodValues.vegetableLevel", 50);
+			playerConfig.set("foodValues.grainLevel", 50);
+			playerConfig.set("foodValues.fishLevel", 50);
 			playerConfig.save(playerFile);
 			} catch (IOException exception) {
 				exception.printStackTrace();

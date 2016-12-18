@@ -31,39 +31,121 @@ public class HaNValueManagement {
 		return Float.parseFloat(mainClass.getConfig().getString("maxSpeed"));
 	}
 	
+	//Gets the players nutrition levels.
 	public double getPlayerFruitLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		return playerConfig.getDouble("fruitLevel");
 	}
 	
-	public double getPlayerVegetablelevel(Player player) {
+	public double getPlayerVegetableLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		return playerConfig.getDouble("vegetableLevel");
 	}
 	
-	public double getPlayerMeatlevel(Player player) {
+	public double getPlayerMeatLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		return playerConfig.getDouble("meatLevel");
 	}
 	
-	public double getPlayerGrainlevel(Player player) {
+	public double getPlayerGrainLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		return playerConfig.getDouble("grainLevel");
 	}
 	
-	public double getPlayerFishlevel(Player player) {
+	public double getPlayerFishLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		return playerConfig.getDouble("fishLevel");
 	}
 	
-	public void setPlayerFruitLevel(Player player) {
+	//The below methods set the players level for each nutrition.
+	public void setPlayerFruitLevel(Player player, double value) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		playerConfig.
+		playerConfig.set("foodValues.fruitLevel", value);
+		try {
+			playerConfig.save(playerFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerVegetableLevel(Player player, double value) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		playerConfig.set("foodValues.vegetableLevel", value);
+		try {
+			playerConfig.save(playerFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerMeatLevel(Player player, double value) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		playerConfig.set("foodValues.meatLevel", value);
+		try {
+			playerConfig.save(playerFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerFishLevel(Player player, double value) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		playerConfig.set("foodValues.fishLevel", value);
+		try {
+			playerConfig.save(playerFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerGrainLevel(Player player, double value) {
+		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
+		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		playerConfig.set("foodValues.grainLevel", value);
+		try {
+			playerConfig.save(playerFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//The following methods add food values to the player, in conjunction with the methods above.
+	public void addPlayerFruitLevel(Player player, double toAdd) {
+		double fruitLevel = getPlayerFruitLevel(player);
+		setPlayerFruitLevel(player, fruitLevel + toAdd);
+	}
+	
+	public void addPlayerVegetableLevel(Player player, double toAdd) {
+		double vegetableLevel = getPlayerVegetableLevel(player);
+		setPlayerVegetableLevel(player, vegetableLevel + toAdd);
+	}
+	
+	public void addPlayerMeatLevel(Player player, double toAdd) {
+		double meatLevel = getPlayerMeatLevel(player);
+		setPlayerMeatLevel(player, meatLevel + toAdd);
+	}
+	
+	public void addPlayerFishLevel(Player player, double toAdd) {
+		double fishLevel = getPlayerFishLevel(player);
+		setPlayerFishLevel(player, fishLevel + toAdd);
+	}
+	
+	public void addPlayerGrainLevel(Player player, double toAdd) {
+		double grainLevel = getPlayerGrainLevel(player);
+		setPlayerGrainLevel(player, grainLevel + toAdd);
 	}
 }
