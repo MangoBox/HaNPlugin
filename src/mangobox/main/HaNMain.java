@@ -225,6 +225,9 @@ public class HaNMain extends JavaPlugin implements Listener {
 					player.sendMessage("§cTypes are: fruit, vegetable, fish, meant, grain, all");
 				}
 			}
+		} else if (cmd.getName().equalsIgnoreCase("sethunger") && sender instanceof Player) {
+			Player player = (Player) sender;
+			player.setFoodLevel(Integer.parseInt(args[0]));
 		}
 		return true;
 	}
