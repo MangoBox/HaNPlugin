@@ -10,30 +10,46 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-public class HaNMain extends JavaPlugin {
+public class HaNMain extends JavaPlugin implements Listener {
 	
+	
+    HaNMain mainClass = this;
 	@Override
 	public void onEnable() {
 		getLogger().info("HaNMain v0.1 by MangoBox has been loaded!");
 		
+		//Creates a directory for player data.
+		File folder = new File(this.getDataFolder()+File.separator+"players");
+		if(!folder.exists()) folder.mkdirs();
+		this.getServer().getPluginManager().registerEvents(this, this);
+		HaNFoodIntakeController foodController = new HaNFoodIntakeController(this);
+		this.getServer().getPluginManager().registerEvents(foodController, this);
+		
 		//Min and max values for possible max health.
 		getConfig().addDefault("minHealth", 1d);
 		getConfig().addDefault("maxHealth", 40d);
+		
+		getConfig().addDefault("minHealthLevel", 0d);
+		getConfig().addDefault("maxHealthLevel", 90d);
 
 		//Min and max values for possible speed.
 		getConfig().addDefault("minSpeed", 0.1f);
 		getConfig().addDefault("maxSpeed", 0.3f);
+		
+		getConfig().addDefault("minSpeedLevel", 0d);
+		getConfig().addDefault("maxSpeedLevel", 80d);
 		
 		//When true, rounds the maxHealth attribute to the nearest whole heart.
 		getConfig().addDefault("roundMaxHealthUp", true);
 		
 		//The number of ticks before subtracting the subtractPercValue
 		getConfig().addDefault("ticksPerDeduction", 1200L);
-		getConfig().addDefault("deductionPercAmount", -0.05);
+		getConfig().addDefault("deductionPercAmount", -0.3);
 		
 		getConfig().addDefault("fruitDefaultValue", 50d);
 		getConfig().addDefault("vegetableDefaultValue", 50d);
@@ -87,10 +103,11 @@ public class HaNMain extends JavaPlugin {
 		//Creates a scheduler for dwindling away the health levels of players
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+
             @Override
             public void run() {
               for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-            	  	HaNValueManagement valueManagement = new HaNValueManagement();
+            	  	HaNValueManagement valueManagement = new HaNValueManagement(mainClass);
 					valueManagement.addPlayerFishLevel(player, getConfig().getDouble("deductionPercAmount"));
 					valueManagement.addPlayerFruitLevel(player, getConfig().getDouble("deductionPercAmount"));
 					valueManagement.addPlayerVegetableLevel(player, getConfig().getDouble("deductionPercAmount"));
@@ -119,7 +136,7 @@ public class HaNMain extends JavaPlugin {
 		} else if (cmd.getName().equalsIgnoreCase("showpercbar") && sender instanceof Player) {
 			float floatPercentage = Float.parseFloat(args[0]);
 			Player player = (Player) sender;
-			player .sendMessage("ï¿½a" + args[0] + "% " + new HaNMsgFormatting().returnPercentageBar(floatPercentage, 10, true, "ï¿½a", "ï¿½b", "ï¿½2"));
+			player .sendMessage("§a" + args[0] + "% " + new HaNMsgFormatting().returnPercentageBar(floatPercentage, 10, true, "§a", "§b", "§2"));
 		}
 		return false;
 		*/
@@ -141,31 +158,32 @@ public class HaNMain extends JavaPlugin {
 				try {
 				Double.parseDouble(args[1]);
 				} catch (NumberFormatException exception) {
-					player.sendMessage("ï¿½cThe amount you entered was not valid.");
-					return false;
+					player.sendMessage("§cThe amount you entered was not valid.");
+					return true;
 				}
 				
 				if(Double.parseDouble(args[1]) > 100 || Double.parseDouble(args[1]) < 0) {
-					player.sendMessage("ï¿½cThe amount you entered must be between 0 and 100.");
-					return false;
+					player.sendMessage("§cThe amount you entered must be between 0 and 100.");
+					return true;
 				}
 			}
 			
 			//Breaks the method if the player was not found.
 			if(target == null) {
-				player.sendMessage("ï¿½cThe target was not found.");
-				return false;
+				player.sendMessage("§cThe target was not found.");
+				return true;
 			}
 			
-			HaNValueManagement valueManagement = new HaNValueManagement();
+			HaNValueManagement valueManagement = new HaNValueManagement(this);
 			if (args.length == 0) {
 				//Making the standard health message
-				
+				HaNMsgFormatting msgFormatting = new HaNMsgFormatting();
+				msgFormatting.sendPlayerNutritionMessage(player, this);
 			} else if (args.length >= 1) {
 				//Command for setting health values. Admin permission should be added to the statement above.
 				if(args.length == 1) {
-					player.sendMessage("ï¿½cThat command was not used correctly. Usage: /health <type> <amount> [player]");
-					player.sendMessage("ï¿½cTypes are: fruit, vegetable, fish, meant, grain, all");
+					player.sendMessage("§cThat command was not used correctly. Usage: /health <type> <amount> [player]");
+					player.sendMessage("§cTypes are: fruit, vegetable, fish, meant, grain, all");
 				} else if (args.length == 2 || args.length == 3) {
 					//Setting the individual values.
 					switch (args[0]) {
@@ -175,36 +193,47 @@ public class HaNMain extends JavaPlugin {
 							valueManagement.setPlayerMeatLevel(target, Double.parseDouble(args[1]));
 							valueManagement.setPlayerVegetableLevel(target, Double.parseDouble(args[1]));
 							valueManagement.setPlayerGrainLevel(target, Double.parseDouble(args[1]));
-							player.sendMessage("ï¿½aSet all values to " + args[1] + " for player " + target.getDisplayName());
-						case "fruit":
+							player.sendMessage("§aSet all values to " + args[1] + " for player " + target.getDisplayName());
+							return true;
+					case "fruit":
 							valueManagement.setPlayerFruitLevel(target, Double.parseDouble(args[1]));
+							player.sendMessage("§aSet fruit value to " + args[1] + " for player " + target.getDisplayName());
+							return true;
 						case "vegetable":
 							valueManagement.setPlayerVegetableLevel(target, Double.parseDouble(args[1]));
+							player.sendMessage("§aSet vegetable value to " + args[1] + " for player " + target.getDisplayName());
+							return true;
 						case "meat":
 							valueManagement.setPlayerMeatLevel(target, Double.parseDouble(args[1]));
+							player.sendMessage("§aSet meat value to " + args[1] + " for player " + target.getDisplayName());
+							return true;
 						case "grain":
 							valueManagement.setPlayerGrainLevel(target, Double.parseDouble(args[1]));
+							player.sendMessage("§aSet grain value to " + args[1] + " for player " + target.getDisplayName());
+							return true;
 						case "fish":
 							valueManagement.setPlayerFishLevel(target, Double.parseDouble(args[1]));
+							player.sendMessage("§aSet fish value to " + args[1] + " for player " + target.getDisplayName());
+							return true;
 						default:
 							//If the type of food is invalid, the player is sent an error message.
-							player.sendMessage("ï¿½cThat type of food value was not found.");
+							player.sendMessage("§cThat type of food value was not found.");
+							return true;
 					}
 				} else if (args.length >= 4) {
-					player.sendMessage("ï¿½cToo many arguments. Usage: /health <type> <amount> [player]");
-					player.sendMessage("ï¿½cTypes are: fruit, vegetable, fish, meant, grain, all");
+					player.sendMessage("§cToo many arguments. Usage: /health <type> <amount> [player]");
+					player.sendMessage("§cTypes are: fruit, vegetable, fish, meant, grain, all");
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
+	public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
 		File playerFile = new File(this.getDataFolder()+File.separator+"players"+File.separator+event.getPlayer().getUniqueId()+".yml");
 		
 		if(!playerFile.exists()) {
-			try {
 			playerFile.createNewFile();
 			FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 			playerConfig.set("foodValues.fruitLevel", getConfig().getDouble("fruitDefaultValue"));
@@ -213,9 +242,7 @@ public class HaNMain extends JavaPlugin {
 			playerConfig.set("foodValues.grainLevel", getConfig().getDouble("grainDefaultValue"));
 			playerConfig.set("foodValues.fishLevel", getConfig().getDouble("fishDefaultValue"));
 			playerConfig.save(playerFile);
-			} catch (IOException exception) {
-				exception.printStackTrace();
-			}
+			event.getPlayer().sendMessage("test");
 		}
 	}
 

@@ -11,6 +11,6 @@ commands:
    getitemmat:
      description: Gets the material name in your hand.
      usage: /<command>
-   showpercbar:
-     description: Gets a percentage.
+   health:
+     description: Shows the health of your character.
      usage: /<command>

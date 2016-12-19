@@ -11,6 +11,10 @@ import org.bukkit.entity.Player;
 public class HaNValueManagement {
 
 	HaNMain mainClass;
+	public HaNValueManagement(HaNMain plugin) {
+		mainClass = plugin;
+	}
+	
 	
 	public double getFoodFruitValue(Material itemMat) {
 		Double foodValue = mainClass.getConfig().getDouble("foodTypes.fruit." + itemMat.toString());
@@ -22,7 +26,7 @@ public class HaNValueManagement {
 	}
 	
 	public double getFoodVegetableValue(Material itemMat) {
-		Double foodValue = mainClass.getConfig().getDouble("foodTypes.vegetable." + itemMat.toString());
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.vegetable." + itemMat);
 		if(foodValue != null) {
 			return foodValue;
 		} else {
@@ -31,7 +35,7 @@ public class HaNValueManagement {
 	}
 	
 	public double getFoodMeatValue(Material itemMat) {
-		Double foodValue = mainClass.getConfig().getDouble("foodTypes.meat." + itemMat.toString());
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.meat." + itemMat);
 		if(foodValue != null) {
 			return foodValue;
 		} else {
@@ -40,7 +44,7 @@ public class HaNValueManagement {
 	}
 	
 	public double getFoodFishValue(Material itemMat) {
-		Double foodValue = mainClass.getConfig().getDouble("foodTypes.fish." + itemMat.toString());
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.fish." + itemMat);
 		if(foodValue != null) {
 			return foodValue;
 		} else {
@@ -49,7 +53,7 @@ public class HaNValueManagement {
 	}
 	
 	public double getFoodGrainValue(Material itemMat) {
-		Double foodValue = mainClass.getConfig().getDouble("foodTypes.grain." + itemMat.toString());
+		Double foodValue = mainClass.getConfig().getDouble("foodTypes.grain." + itemMat);
 		if(foodValue != null) {
 			return foodValue;
 		} else {
@@ -96,31 +100,31 @@ public class HaNValueManagement {
 	public double getPlayerFruitLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		return playerConfig.getDouble("fruitLevel");
+		return playerConfig.getDouble("foodValues.fruitLevel");
 	}
 	
 	public double getPlayerVegetableLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		return playerConfig.getDouble("vegetableLevel");
+		return playerConfig.getDouble("foodValues.vegetableLevel");
 	}
 	
 	public double getPlayerMeatLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		return playerConfig.getDouble("meatLevel");
+		return playerConfig.getDouble("foodValues.meatLevel");
 	}
 	
 	public double getPlayerGrainLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		return playerConfig.getDouble("grainLevel");
+		return playerConfig.getDouble("foodValues.grainLevel");
 	}
 	
 	public double getPlayerFishLevel(Player player) {
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		return playerConfig.getDouble("fishLevel");
+		return playerConfig.getDouble("foodValues.fishLevel");
 	}
 	
 	//The below methods set the players level for each nutrition.
@@ -187,26 +191,26 @@ public class HaNValueManagement {
 	//The following methods add food values to the player, in conjunction with the methods above.
 	public void addPlayerFruitLevel(Player player, double toAdd) {
 		double fruitLevel = getPlayerFruitLevel(player);
-		setPlayerFruitLevel(player, fruitLevel + toAdd);
+		setPlayerFruitLevel(player, fruitLevel += toAdd);
 	}
 	
 	public void addPlayerVegetableLevel(Player player, double toAdd) {
 		double vegetableLevel = getPlayerVegetableLevel(player);
-		setPlayerVegetableLevel(player, vegetableLevel + toAdd);
+		setPlayerVegetableLevel(player, vegetableLevel += toAdd);
 	}
 	
 	public void addPlayerMeatLevel(Player player, double toAdd) {
 		double meatLevel = getPlayerMeatLevel(player);
-		setPlayerMeatLevel(player, meatLevel + toAdd);
+		setPlayerMeatLevel(player, meatLevel += toAdd);
 	}
 	
 	public void addPlayerFishLevel(Player player, double toAdd) {
 		double fishLevel = getPlayerFishLevel(player);
-		setPlayerFishLevel(player, fishLevel + toAdd);
+		setPlayerFishLevel(player, fishLevel += toAdd);
 	}
 	
 	public void addPlayerGrainLevel(Player player, double toAdd) {
 		double grainLevel = getPlayerGrainLevel(player);
-		setPlayerGrainLevel(player, grainLevel + toAdd);
+		setPlayerGrainLevel(player, grainLevel += toAdd);
 	}
 }
