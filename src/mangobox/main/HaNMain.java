@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -50,6 +51,9 @@ public class HaNMain extends JavaPlugin implements Listener {
 		//The number of ticks before subtracting the subtractPercValue
 		getConfig().addDefault("ticksPerDeduction", 1200L);
 		getConfig().addDefault("deductionPercAmount", -0.3);
+		
+		getConfig().addDefault("useRandomSpawnValues", true);
+		getConfig().addDefault("additionalRandomAdvantage", 25);
 		
 		getConfig().addDefault("fruitDefaultValue", 50d);
 		getConfig().addDefault("vegetableDefaultValue", 50d);
@@ -121,14 +125,13 @@ public class HaNMain extends JavaPlugin implements Listener {
 	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String [] args) {
 		//The debugging commands. Use if necessary.
-		/* if(cmd.getName().equalsIgnoreCase("setmaxhealth") && sender instanceof Player) {
+		if(cmd.getName().equalsIgnoreCase("setmaxhealth") && sender instanceof Player) {
 			Player player = (Player) sender;
 			player.setMaxHealth(Double.parseDouble(args[0]));
 			return false;
 		} else if(cmd.getName().equalsIgnoreCase("setspeed") && sender instanceof Player) {
 			Player player = (Player) sender;
-			player.sendMessage(Float.toString(player.getWalkSpeed()));
-			player.setWalkSpeed(Float.parseFloat(args[0]));
+			new HaNAttributeController(this).playerSetSpeed(player, Double.parseDouble(args[0]), true);
 			return false;
 		} else if (cmd.getName().equalsIgnoreCase("getitemmat") && sender instanceof Player) {
 			Player player = (Player) sender;
@@ -138,8 +141,6 @@ public class HaNMain extends JavaPlugin implements Listener {
 			Player player = (Player) sender;
 			player .sendMessage("§a" + args[0] + "% " + new HaNMsgFormatting().returnPercentageBar(floatPercentage, 10, true, "§a", "§b", "§2"));
 		}
-		return false;
-		*/
 		if(cmd.getName().equalsIgnoreCase("health") && sender instanceof Player) {
 			//Casting the Sender to a player.
 			Player player = (Player) sender;
@@ -239,14 +240,26 @@ public class HaNMain extends JavaPlugin implements Listener {
 		if(!playerFile.exists()) {
 			playerFile.createNewFile();
 			FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-			playerConfig.set("foodValues.fruitLevel", getConfig().getDouble("fruitDefaultValue"));
-			playerConfig.set("foodValues.meatLevel", getConfig().getDouble("meatDefaultValue"));
-			playerConfig.set("foodValues.vegetableLevel", getConfig().getDouble("vegetableDefaultValue"));
-			playerConfig.set("foodValues.grainLevel", getConfig().getDouble("grainDefaultValue"));
-			playerConfig.set("foodValues.fishLevel", getConfig().getDouble("fishDefaultValue"));
-			playerConfig.save(playerFile);
-			event.getPlayer().sendMessage("test");
+			if(getConfig().getBoolean("useRandomSpawnValues")) {
+				//If config permits it, random health values will be used upon spawn.
+				HaNValueManagement valueManagement = new HaNValueManagement(this);
+				valueManagement.setRandomPlayerValues(event.getPlayer(), getConfig().getDouble("additionalRandomAdvantage"));
+			} else {
+				//If not, default values will be used.
+				playerConfig.set("foodValues.fruitLevel", getConfig().getDouble("fruitDefaultValue"));
+				playerConfig.set("foodValues.meatLevel", getConfig().getDouble("meatDefaultValue"));
+				playerConfig.set("foodValues.vegetableLevel", getConfig().getDouble("vegetableDefaultValue"));
+				playerConfig.set("foodValues.grainLevel", getConfig().getDouble("grainDefaultValue"));
+				playerConfig.set("foodValues.fishLevel", getConfig().getDouble("fishDefaultValue"));
+				playerConfig.save(playerFile);
+			}
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		HaNValueManagement valueManagement = new HaNValueManagement(this);
+		valueManagement.setRandomPlayerValues(event.getPlayer(), getConfig().getDouble("additionalRandomAdvantage"));
 	}
 
 }

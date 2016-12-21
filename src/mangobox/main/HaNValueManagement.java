@@ -2,6 +2,8 @@ package mangobox.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -61,7 +63,7 @@ public class HaNValueManagement {
 		}
 	}
 	
-	public double getTotalFoodLevel(Player player) {
+	public double getTotalFoodLevel(Player player, boolean usePercentage) {
 		double fruitLevel = getPlayerFruitLevel(player);
 		double vegetableLevel = getPlayerVegetableLevel(player);
 		double meatLevel = getPlayerMeatLevel(player);
@@ -72,8 +74,13 @@ public class HaNValueManagement {
 		double totalAverage = (fruitLevel + vegetableLevel + meatLevel + grainLevel + fishLevel) / 5;
 		//Extremely inefficient, but it nonetheless returns the lowest food value.
 		double lowestLevel = Math.min(fruitLevel, Math.min(vegetableLevel, Math.min(meatLevel, Math.min(grainLevel, fishLevel))));
-		return totalAverage - ((totalAverage - lowestLevel) * 0.75);
+		return usePercentage ? totalAverage - ((totalAverage - lowestLevel) * 0.5) : totalAverage - ((totalAverage - lowestLevel) * 0.005);
 	
+	}
+	
+	//An overload for the above method, to prevent breaking of methods in other classes.
+	public double getTotalFoodLevel(Player player){
+		return getTotalFoodLevel(player, true);
 	}
 	
 	//Returns the minimum maximum health possible
@@ -129,63 +136,94 @@ public class HaNValueManagement {
 	
 	//The below methods set the players level for each nutrition.
 	public void setPlayerFruitLevel(Player player, double value) {
+		double clampedValue = Math.max(0, Math.min(100, value));
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		playerConfig.set("foodValues.fruitLevel", value);
+		playerConfig.set("foodValues.fruitLevel", clampedValue);
 		try {
 			playerConfig.save(playerFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		HaNAttributeController attributeController = new HaNAttributeController(mainClass);
+		attributeController.playerSetSpeed(player, getTotalFoodLevel(player) / 100, true);
+		attributeController.playerSetMaxHealth(player, getTotalFoodLevel(player) / 100);
 	}
 	
 	public void setPlayerVegetableLevel(Player player, double value) {
+		double clampedValue = Math.max(0, Math.min(100, value));
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		playerConfig.set("foodValues.vegetableLevel", value);
+		playerConfig.set("foodValues.vegetableLevel", clampedValue);
 		try {
 			playerConfig.save(playerFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		HaNAttributeController attributeController = new HaNAttributeController(mainClass);
+		attributeController.playerSetSpeed(player, getTotalFoodLevel(player) / 100, true);
+		attributeController.playerSetMaxHealth(player,getTotalFoodLevel(player)  / 100);
 	}
 	
 	public void setPlayerMeatLevel(Player player, double value) {
+		double clampedValue = Math.max(0, Math.min(100, value));
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		playerConfig.set("foodValues.meatLevel", value);
+		playerConfig.set("foodValues.meatLevel", clampedValue);
 		try {
 			playerConfig.save(playerFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		HaNAttributeController attributeController = new HaNAttributeController(mainClass);
+		attributeController.playerSetSpeed(player, getTotalFoodLevel(player) / 100, true);
+		attributeController.playerSetMaxHealth(player,getTotalFoodLevel(player) / 100);
 	}
 	
 	public void setPlayerFishLevel(Player player, double value) {
+		double clampedValue = Math.max(0, Math.min(100, value));
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		playerConfig.set("foodValues.fishLevel", value);
+		playerConfig.set("foodValues.fishLevel", clampedValue);
 		try {
 			playerConfig.save(playerFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		HaNAttributeController attributeController = new HaNAttributeController(mainClass);
+		attributeController.playerSetSpeed(player, getTotalFoodLevel(player) / 100, true);
+		attributeController.playerSetMaxHealth(player,getTotalFoodLevel(player) / 100);
 	}
 	
 	public void setPlayerGrainLevel(Player player, double value) {
+		double clampedValue = Math.max(0, Math.min(100, value));
 		File playerFile = new File(mainClass.getDataFolder()+File.separator+"players"+File.separator+player.getUniqueId()+".yml");
 		FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		playerConfig.set("foodValues.grainLevel", value);
+		playerConfig.set("foodValues.grainLevel", clampedValue);
 		try {
 			playerConfig.save(playerFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		HaNAttributeController attributeController = new HaNAttributeController(mainClass);
+		attributeController.playerSetSpeed(player, getTotalFoodLevel(player) / 100, true);
+		attributeController.playerSetMaxHealth(player,getTotalFoodLevel(player) / 100);
+	}
+	
+	public void setRandomPlayerValues(Player player, double additionalValue) {
+		Random random = new Random();
+		DecimalFormat df = new DecimalFormat("###.##");
+		//Generates random values and assigns the players values to them. Particularly inefficient, must find a better way to do this.
+		setPlayerFishLevel(player, Double.parseDouble(df.format(random.nextFloat() * 100)) + additionalValue);
+		setPlayerGrainLevel(player, Double.parseDouble(df.format(random.nextFloat() * 100)) + additionalValue);
+		setPlayerFruitLevel(player, Double.parseDouble(df.format(random.nextFloat() * 100)) + additionalValue);
+		setPlayerVegetableLevel(player, Double.parseDouble(df.format(random.nextFloat() * 100)) + additionalValue);
+		setPlayerMeatLevel(player, Double.parseDouble(df.format(random.nextFloat() * 100)) + additionalValue);
 	}
 	
 	//The following methods add food values to the player, in conjunction with the methods above.

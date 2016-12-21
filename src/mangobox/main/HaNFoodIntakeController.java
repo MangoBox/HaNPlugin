@@ -22,10 +22,10 @@ public class HaNFoodIntakeController implements Listener {
 		ItemStack item = event.getItem();
 		Material itemMat = item.getType();
 		valueManagement.addPlayerFishLevel(player, (double)valueManagement.getFoodFishValue(itemMat));
-		valueManagement.addPlayerFruitLevel(player, (double)valueManagement.getFoodFishValue(itemMat));
-		valueManagement.addPlayerMeatLevel(player, (double)valueManagement.getFoodFishValue(itemMat));
-		valueManagement.addPlayerGrainLevel(player, (double)valueManagement.getFoodFishValue(itemMat));
-		valueManagement.addPlayerVegetableLevel(player, (double)valueManagement.getFoodFishValue(itemMat));
+		valueManagement.addPlayerFruitLevel(player, (double)valueManagement.getFoodFruitValue(itemMat));
+		valueManagement.addPlayerMeatLevel(player, (double)valueManagement.getFoodMeatValue(itemMat));
+		valueManagement.addPlayerGrainLevel(player, (double)valueManagement.getFoodGrainValue(itemMat));
+		valueManagement.addPlayerVegetableLevel(player, (double)valueManagement.getFoodVegetableValue(itemMat));
 		
 	}
 
